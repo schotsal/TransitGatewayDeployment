@@ -314,61 +314,61 @@ Mappings:
       Xenial: ami-4a733826
   AWSRegionArch2AMI:
     us-east-1:
-      Bundle1: ami-ce01c0b3
-      Bundle2: ami-bffd3cc2
-      BYOL: ami-a2fa3bdf
+      Bundle1: ami-0725ec6c13a8d9bd1
+      Bundle2: ami-050725600cf371a1c
+      BYOL: ami-0012adac0a414863c
     us-east-2:
-      Bundle1: ami-10f3c575
-      Bundle2: ami-9ef3c5fb
-      BYOL: ami-11e1d774
+      Bundle1: ami-0ab88c7bfee0fd533
+      Bundle2: ami-0340ae9cf0a892bb9
+      BYOL: ami-04cb91d704368a8be
     us-west-1:
-      Bundle1: ami-235b4f43
-      Bundle2: ami-854551e5
-      BYOL: ami-a95b4fc9
+      Bundle1: ami-0dd6697dad89db412
+      Bundle2: ami-02aa6330cd84b4020
+      BYOL: ami-0ca25d8ac63d17cc6
     us-west-2:
-      Bundle1: ami-8a22b3f2
-      Bundle2: ami-9a29b8e2
-      BYOL: ami-d424b5ac
+      Bundle1: ami-03e60b21ae6660711
+      Bundle2: ami-019b369b2201d17e1
+      BYOL: ami-094f3a5479b5096b8
     ca-central-1:
-      Bundle1: ami-dd0582b9
-      Bundle2: ami-57048333
-      BYOL: ami-64038400
+      Bundle1: ami-0ca7f26ddbf814033
+      Bundle2: ami-0d179c6cdc2589b25
+      BYOL: ami-0c3940cfe30fd7853
     eu-central-1:
-      Bundle1: ami-1bbdd574
-      Bundle2: ami-1ebdd571
-      BYOL: ami-55bfd73a
+      Bundle1: ami-0852f5e901fab29fa
+      Bundle2: ami-087597cf0637e3b39
+      BYOL: ami-00f2ea8ebc29834a6
     eu-west-1:
-      Bundle1: ami-edb0fe94
-      Bundle2: ami-1fb1ff66
-      BYOL: ami-62b5fb1b
+      Bundle1: ami-08d3fcfe3bd131583
+      Bundle2: ami-08e82ba0784b4e5ac
+      BYOL: ami-05a20ed554111d2fb
     eu-west-2:
-      Bundle1: ami-f46a8d93
-      Bundle2: ami-c4688fa3
-      BYOL: ami-876a8de0
+      Bundle1: ami-0d570b21bbe1dd096
+      Bundle2: ami-0cea9a41443754f56
+      BYOL: ami-04e0b601413d8a138
     ap-southeast-1:
-      Bundle1: ami-55bced29
-      Bundle2: ami-36bdec4a
-      BYOL: ami-27baeb5b
+      Bundle1: ami-06b34656abc31ce12
+      Bundle2: ami-050d7488f46b8e776
+      BYOL: ami-0b6d59afd928af807
     ap-southeast-2:
-      Bundle1: ami-aed112cc
-      Bundle2: ami-add013cf
-      BYOL: ami-00d61562
+      Bundle1: ami-05e41c650f585f3d3
+      Bundle2: ami-0c3ced1b6948e91ac
+      BYOL: ami-0a31b0cc246e903e2
     ap-northeast-2:
-      Bundle1: ami-4eb81420
-      Bundle2: ami-a8bf13c6
-      BYOL: ami-49bd1127
+      Bundle1: ami-0b7322f0dbbf53ab7
+      Bundle2: ami-0a72f886dd8026c05
+      BYOL: ami-0e8e239b8b61bdc29
     ap-northeast-1:
-      Bundle1: ami-39662d5f
-      Bundle2: ami-75652e13
-      BYOL: ami-57662d31
+      Bundle1: ami-0dfd9708425ae9fae
+      Bundle2: ami-0ca2e94970201db8d
+      BYOL: ami-0a1fa1c292897d38e
     ap-south-1:
-      Bundle1: ami-d385dcbc
-      Bundle2: ami-ee80d981
-      BYOL: ami-e780d988
+      Bundle1: ami-0565f10a22e9f15c1
+      Bundle2: ami-001923acdc459e458
+      BYOL: ami-09b1600161c83f304
     sa-east-1:
-      Bundle1: ami-9e0154f2
-      Bundle2: ami-d80653b4
-      BYOL: ami-9c0154f0
+      Bundle1: ami-020546007f963c752
+      Bundle2: ami-05a40658314a5dc0f
+      BYOL: ami-0f4804ea341d4c397
   Constants:
     S3URL:
       URL1: https://s3.amazonaws.com
@@ -1569,110 +1569,7 @@ Resources:
       - FW2UntrustNetworkInterface
       - FW2TrustNetworkInterface
       - FW1Instance   
-  VPC0TestServer:
-    Type: AWS::EC2::Instance
-    Properties:
-      DisableApiTermination: 'false'
-      InstanceInitiatedShutdownBehavior: stop
-      ImageId: !FindInMap
-        - UbuntuRegionMap
-        - !Ref 'AWS::Region'
-        - AMI
-      InstanceType: t3.micro
-      KeyName: !Ref 'KeyName'
-      Monitoring: 'false'
-      Tags:
-      - Key: Name
-        Value: !Join
-            - '-'
-            - - !Ref 'AWS::StackName'
-              - VPC0TestServer
-      NetworkInterfaces:
-        - DeleteOnTermination: 'true'
-          Description: Primary network interface
-          DeviceIndex: 0
-          SubnetId: !Ref 'VPC0HostSubnetAz0'
-          PrivateIpAddresses:
-            - PrivateIpAddress: 10.1.0.110
-              Primary: 'true'
-          GroupSet:
-            - !Ref VPC0sgWideOpen
-      UserData:
-        Fn::Base64:
-         !Sub 
-          - |    
-                #!/bin/bash -ex
-                until resp=$(curl -s -S -g --max-time 3 --insecure "https://${FWTrustIP}/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>&key=LUFRPT1qS2xCRmZ6WVMrREtrK00yUGt4dVRna2lkY1U9cmgyaE93L3VoZ2U3WUgxeFpGVE1wOUNtdlM2S0Z5Z25ObG8wbmZoNXpuWT0=");do
-                if [[ $resp == *"[CDATA[yes"* ]] ; then
-                    break
-                  fi
-                  sleep 10s
-                done  
-                sudo apt-get update &&
-                sudo apt-get install -y apache2 php7.0 &&
-                sudo apt-get install -y libapache2-mod-php7. &&
-                sudo rm -f /var/www/html/index.html &&
-                sudo wget -O /var/www/html/index.php https://raw.githubusercontent.com/jasonmeurer/showheaders/master/showheaders.php &&
-                sudo service apache2 restart &&
-                sudo echo "done"
-          - FWTrustIP:  !GetAtt FW1TrustNetworkInterface.PrimaryPrivateIpAddress  
-    DependsOn:
-      - VPC1HostSubnetAz0
-      - sgWideOpen
-      - FW2Instance
-      - VPC1sgWideOpen
-  VPC1TestServer:
-    Type: AWS::EC2::Instance
-    Properties:
-      DisableApiTermination: 'false'
-      InstanceInitiatedShutdownBehavior: stop
-      ImageId: !FindInMap
-        - UbuntuRegionMap
-        - !Ref 'AWS::Region'
-        - AMI
-      InstanceType: t3.micro
-      KeyName: !Ref 'KeyName'
-      Monitoring: 'false'
-      Tags:
-      - Key: Name
-        Value: !Join
-            - '-'
-            - - !Ref 'AWS::StackName'
-              - VPC1TestServer
-      NetworkInterfaces:
-        - DeleteOnTermination: 'true'
-          Description: Primary network interface
-          DeviceIndex: 0
-          SubnetId: !Ref 'VPC1HostSubnetAz0'
-          PrivateIpAddresses:
-            - PrivateIpAddress: 10.2.0.110
-              Primary: 'true'
-          GroupSet:
-            - !Ref VPC1sgWideOpen
-      UserData:
-        Fn::Base64:
-         !Sub 
-          - |    
-                #!/bin/bash -ex
-                until resp=$(curl -s -S -g --max-time 3 --insecure "https://${FWTrustIP}/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>&key=LUFRPT1qS2xCRmZ6WVMrREtrK00yUGt4dVRna2lkY1U9cmgyaE93L3VoZ2U3WUgxeFpGVE1wOUNtdlM2S0Z5Z25ObG8wbmZoNXpuWT0=");do
-                if [[ $resp == *"[CDATA[yes"* ]] ; then
-                    break
-                  fi
-                  sleep 10s
-                done  
-                sudo apt-get update &&
-                sudo apt-get install -y apache2 php7.0 &&
-                sudo apt-get install -y libapache2-mod-php7. &&
-                sudo rm -f /var/www/html/index.html &&
-                sudo wget -O /var/www/html/index.php https://raw.githubusercontent.com/jasonmeurer/showheaders/master/showheaders.php &&
-                sudo service apache2 restart &&
-                sudo echo "done"
-          - FWTrustIP:  !GetAtt FW1TrustNetworkInterface.PrimaryPrivateIpAddress  
-    DependsOn:
-      - VPC1HostSubnetAz0
-      - sgWideOpen
-      - FW2Instance
-      - VPC1sgWideOpen
+  
   InitFWStateMachine:
     Type: 'AWS::StepFunctions::StateMachine'
     Properties:
